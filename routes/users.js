@@ -1,10 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const uploadAvatar = require('../middlewares/uploadAvatar')
+const uploadAvatar = require('../middlewares/uploadAvatar');
 
-const usersController = require('../controllers/usersController')
+const usersController = require('../controllers/usersController');
 
-router.get('/cadastrar', usersController.formRegister)
-router.post('/cadastrar',uploadAvatar, usersController.registerUser)
+router.get('/cadastrar', usersController.formRegister);
+router.post('/cadastrar',uploadAvatar, usersController.registerUser);
+router.get('/login', usersController.loginForm);
+router.post('/login', usersController.login)
 
 module.exports = router;

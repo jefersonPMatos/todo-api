@@ -3,6 +3,7 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const session = require('express-session')
 
 const tasksRouter = require('./routes/tasks');
 const usersRouter = require('./routes/users');
@@ -15,6 +16,12 @@ app.use('/static', express.static('public'));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+app.use(session({
+  secret: 'senhada nada secreta',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: false }
+}));
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
