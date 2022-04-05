@@ -19,12 +19,11 @@
       </form>
       <ul class="todo-list">
         <li class="todo-list-item">
-          <div class="todo-list-item-name">Some Text</div>
-          <a href="" class="edit">
-            <span class="fas fa-edit"></span>
-          </a>
-          <a href="" class="remove">
-            <span class="fas fa-times"></span>
+          <% tasks && tasks.forEach(task => { %>
+            <li><h4><%= task.title %></h4><p><%= task.details %></p></li>
+            <button class="fas fa-edit" type="submit"></button></a><form method="POST" action="/?_method=DELETE">
+              <button class="fas fa-trash" type="submit"></button>
+            <% }) %>
           </a>
         </li>
       </ul>

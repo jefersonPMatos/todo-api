@@ -52,7 +52,7 @@ const usersController = {
         delete user.password
         req.session.user = user
 
-        res.send('Você está logado!').catch(console.log)
+        res.send('Você está logado!')
     }
 }
 
