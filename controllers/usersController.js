@@ -51,8 +51,9 @@ const usersController = {
 
         delete user.password
         req.session.user = user
+        console.log(user)
 
-        res.send('Você está logado!')
+        res.render('task-form', {tasks: null})
     }
 }
 

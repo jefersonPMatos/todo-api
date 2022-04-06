@@ -10,7 +10,12 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+     User.hasMany(models.Task, {
+       as: 'user_tasks',
+       foreignKey: 'user_id',
+       onDelete: 'CASCADE',
+       onUpdate: 'CASCADE'
+     })
     }
   }
   User.init({
@@ -32,7 +37,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     birthday: {
-      type: DataTypes.DATE,
+      type: DataTypes.DATEONLY,
       allowNull: false
     }
   }, {
