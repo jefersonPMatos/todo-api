@@ -1,13 +1,9 @@
 const { Task } = require("../database/models");
 
-const bcrypt = require("bcrypt");
-const userLogged = require("../middlewares/userLogged");
-
 const tasksController = {
   allTasks: async (req, res) => {
-    const tasks = await Task.findAll();
-    console.log(tasks);
-    res.render("task-form", { tasks });
+    const user = req.user_id
+    const tasks = await Task.findAll({ where: { user_id: user.id}});
   },
 
   newTask: async (req, res) => {
@@ -20,21 +16,20 @@ const tasksController = {
       user_id: user.id,
     }).catch(console.log);
 
-    const tasks = await Task.findAll();
+    const tasks = await Task.findAll({ where: { user_id: user.id}});
 
-    res.render("task-form", { tasks });
   },
 
   editTask: async (req, res) => {
     const { id } = req.params;
-
-    const task = await findOne({ where: { id } });
-
     const { title, details } = req.body;
-
     const user = req.session.user;
+
+    const task = await Task.findOne({ where: { id } });
+
+
     if (task.user_id !== user.id) {
-      res.send("Você não tem permisão para editar essa tarefa!");
+      res.send("Você não tem permisão para editar esta tarefa!");
     } else {
       await Task.update(
         {
@@ -45,24 +40,21 @@ const tasksController = {
       );
     }
 
-    const tasks = await Task.findAll();
-
-    res.render("task-form", { tasks });
+    const tasks = await Task.findAll({ where: { user_id: user.id}});
   },
 
   deleteTask: async (req, res) => {
     const { id } = req.params;
     const task = await Task.findOne({ where: { id } });
-    const uuser = req.session.user;
+    const user = req.session.user;
 
     if (task.user_id !== user.id) {
-      res.send("Você não tem permisão para deletar essa tarefa");
+      res.send("Você não tem permisão para deletar esta tarefa");
     } else {
-      await Task.destroy({ where: { id } }).catch(console.log);
+      await Task.destroy({ where: { id: task.id } });
     }
-    const tasks = await Task.findAll();
+    const tasks = await Task.findAll({ where: { user_id: user.id}});
 
-    res.render("task-form", { tasks });
   },
 };
 
