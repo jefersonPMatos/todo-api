@@ -12,10 +12,6 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
-      avatar: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
       email: {
         type: Sequelize.STRING,
         allowNull: false,
@@ -23,10 +19,6 @@ module.exports = {
       },
       password: {
         type: Sequelize.STRING,
-        allowNull: false
-      },
-      birthday: {
-        type: Sequelize.DATEONLY,
         allowNull: false
       },
       createdAt: {

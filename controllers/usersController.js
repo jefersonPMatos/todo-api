@@ -8,8 +8,7 @@ const usersController = {
   formRegister: (req, res) => {},
 
   registerUser: async (req, res) => {
-    const { name, email, password, birthday } = req.body;
-    const avatar = req.file.filename;
+    const { name, email, password } = req.body;
 
     const user = await User.findAll({
       where: {
@@ -28,18 +27,14 @@ const usersController = {
 
     const newUser = await User.create({
       name,
-      avatar,
       email,
       password: hash,
-      birthday,
     });
 
     return res.status(201).json({
       newUser,
     });
   },
-
-  loginForm: async (req, res) => {},
 
   login: async (req, res) => {
     const { email, password } = req.body;
@@ -72,12 +67,10 @@ const usersController = {
     });
   },
 
-  updateForm: async (req, res) => {},
-
   update: async (req, res) => {
     const { id } = req.params;
-    const { name, email, password, birthday } = req.body;
-    const avatar = req.file ? req.file.filename : undefined;
+    const { name, email, password } = req.body;
+    // const avatar = req.file ? req.file.filename : undefined;
 
     const user = await User.findOne({
       where: {
@@ -89,21 +82,6 @@ const usersController = {
       return res.status(401).json({
         message: "Você não tem autorização para deletar este usuário",
       });
-    } else if (avatar !== undefined) {
-      await User.update(
-        {
-          name,
-          avatar,
-          email,
-          password,
-          birthday,
-        },
-        {
-          where: {
-            id,
-          },
-        }
-      );
     } else {
       await User.update(
         {
