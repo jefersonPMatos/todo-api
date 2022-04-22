@@ -1,6 +1,7 @@
 const { User, Task } = require("../database/models");
 const JWT = require("jsonwebtoken");
 const config = require("../config/auth");
+const { validationResult } = require('express-validator')
 
 const bcrypt = require("bcrypt");
 
@@ -8,9 +9,20 @@ const usersController = {
   formRegister: (req, res) => {},
 
   registerUser: async (req, res) => {
-    const { name, email, password } = req.body;
+    const { email, password } = req.body;
+    const avatar = req.file.filename
+    
+    if(avatar == undefined || avatar === {}){
+      return res.json({ message: "Arquivo não encontrado" })
+    }
 
-    const user = await User.findAll({
+    const errors = validationResult(req);
+
+    if(!errors.isEmpty()){
+      return res.status(400).json({ errors })
+    }
+
+    const user = await User.findOne({
       where: {
         email,
       },
@@ -26,13 +38,13 @@ const usersController = {
     const hash = bcrypt.hashSync(password, saltRounds);
 
     const newUser = await User.create({
-      name,
+      avatar,
       email,
-      password: hash,
+      password: hash
     });
 
     return res.status(201).json({
-      newUser,
+      newUser
     });
   },
 
@@ -69,8 +81,7 @@ const usersController = {
 
   update: async (req, res) => {
     const { id } = req.params;
-    const { name, email, password } = req.body;
-    // const avatar = req.file ? req.file.filename : undefined;
+    const { email, password } = req.body;
 
     const user = await User.findOne({
       where: {
@@ -85,10 +96,8 @@ const usersController = {
     } else {
       await User.update(
         {
-          name,
           email,
           password,
-          birthday,
         },
         {
           where: {

@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   User.init({
-    name: {
+    avatar: {
       type: DataTypes.STRING(50),
       allowNull: false
     },
