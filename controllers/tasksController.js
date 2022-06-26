@@ -1,60 +1,46 @@
-const { Task } = require("../database/models");
+const { User, Task } = require("../database/models");
 
 const tasksController = {
   allTasks: async (req, res) => {
-    const user = req.user_id
-    const tasks = await Task.findAll({ where: { user_id: user.id}});
+    const { userId } = req.user;
+    const tasks = await Task.findAll({ where: { user_id: userId } });
+
+    return res.status(200).json({ tasks });
   },
 
   newTask: async (req, res) => {
-    const { title, details } = req.body;
-    const user = req.session.user;
+    const { id, text, completed } = req.body;
+    const { userId } = req.user;
 
     await Task.create({
-      title,
-      details,
-      user_id: user.id,
-    }).catch(console.log);
-
-    const tasks = await Task.findAll({ where: { user_id: user.id}});
-
+      id,
+      text,
+      completed,
+      user_id: userId,
+    });
   },
 
   editTask: async (req, res) => {
-    const { id } = req.params;
-    const { title, details } = req.body;
-    const user = req.session.user;
+    const { id, text, completed } = req.body;
 
-    const task = await Task.findOne({ where: { id } });
-
-
-    if (task.user_id !== user.id) {
-      res.send("Você não tem permisão para editar esta tarefa!");
-    } else {
-      await Task.update(
-        {
-          title,
-          details,
-        },
-        { where: { id } }
-      );
-    }
-
-    const tasks = await Task.findAll({ where: { user_id: user.id}});
+    await Task.update(
+      {
+        text,
+        completed,
+      },
+      { where: { id } }
+    )
+      .then((res) => {
+        return res.status(200).json({ msg: "succesfully updated" });
+      })
+      .catch((error) => {
+        return res.status(400).json({ msg: "error " + error });
+      });
   },
 
   deleteTask: async (req, res) => {
     const { id } = req.params;
-    const task = await Task.findOne({ where: { id } });
-    const user = req.session.user;
-
-    if (task.user_id !== user.id) {
-      res.send("Você não tem permisão para deletar esta tarefa");
-    } else {
-      await Task.destroy({ where: { id: task.id } });
-    }
-    const tasks = await Task.findAll({ where: { user_id: user.id}});
-
+    await Task.destroy({ where: { id } });
   },
 };
 

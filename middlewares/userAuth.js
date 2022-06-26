@@ -1,16 +1,15 @@
-const JWT = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 const config = require("../config/auth");
 
 function userAuth(req, res, next) {
-  const token = req.headers.authorization;
-  if(!token) {
-    return res.status(401).json({ error: 'Token faltando'})
- }
+  if (!req.headers["authorization"]) {
+    return res.status(401).json({ error: "token não encontrado" });
+  }
 
-  JWT.verify(token, config.secret, (err, decoded) => {
-    if (err) return res.status(401).json({ error: "Token expirado"});
-    req.user = decoded
-    console.log(req.user)
+  const token = req.headers["authorization"];
+
+  jwt.verify(token, config.secret, (error, payload) => {
+    req.user = payload;
     next();
   });
 }

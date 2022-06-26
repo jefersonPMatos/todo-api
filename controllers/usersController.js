@@ -1,34 +1,32 @@
 const { User, Task } = require("../database/models");
 const JWT = require("jsonwebtoken");
 const config = require("../config/auth");
-const { validationResult } = require('express-validator')
+const { validationResult } = require("express-validator");
 
 const bcrypt = require("bcrypt");
 
 const usersController = {
-  formRegister: (req, res) => {},
-
   registerUser: async (req, res) => {
     const { email, password } = req.body;
-    const avatar = req.file.filename
-    
-    if(avatar == undefined || avatar === {}){
-      return res.json({ message: "Arquivo não encontrado" })
+    const avatar = req.file.filename;
+
+    if (avatar == undefined || avatar === {}) {
+      return res.json({ message: "Arquivo não encontrado" });
     }
 
     const errors = validationResult(req);
 
-    if(!errors.isEmpty()){
-      return res.status(400).json({ errors })
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors });
     }
 
-    const user = await User.findOne({
+    const userExist = await User.findOne({
       where: {
         email,
       },
     });
 
-    if (user) {
+    if (userExist) {
       return res.status(500).json({
         message: "Usuário já existe!",
       });
@@ -40,24 +38,32 @@ const usersController = {
     const newUser = await User.create({
       avatar,
       email,
-      password: hash
+      password: hash,
     });
 
     return res.status(201).json({
-      newUser
+      newUser,
     });
   },
 
   login: async (req, res) => {
     const { email, password } = req.body;
+
     const user = await User.findOne({
       where: {
         email,
       },
     });
+
+    if (!user) {
+      return res.status(401).json({
+        message: "Usuário ou senha inválido!",
+      });
+    }
+
     const checkPassword = bcrypt.compareSync(password, user.password);
 
-    if (!user || !checkPassword) {
+    if (!checkPassword) {
       return res.status(401).json({
         message: "Usuário ou senha inválido!",
       });
@@ -130,6 +136,22 @@ const usersController = {
     return res.status(200).json({
       deletedUser,
       message: "Usuário deletado com sucesso",
+    });
+  },
+
+  recovery: async (req, res) => {
+    if (req.user === undefined) {
+      return res.status(500);
+    }
+
+    const { userId } = req.user;
+
+    const user = await User.findOne({ where: { id: userId } });
+
+    console.log(user);
+
+    return res.status(200).json({
+      user,
     });
   },
 };
